@@ -8,26 +8,15 @@ fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
 execFileSync('unzip', ['-o', zipPath, '-d', outDir], { stdio: 'inherit' });
 
-function walk(dir) {
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const full = path.join(dir, entry.name);
-    return entry.isDirectory() ? walk(full) : [full];
-  });
-}
+const jsonPath = path.join(outDir, 'allbars.json');
+const raw = fs.readFileSync(jsonPath, 'utf8');
+const data = JSON.parse(raw);
 
-const files = walk(outDir);
-console.log('FILES', files.map(f => path.relative(outDir, f)));
-for (const file of files) {
-  const stat = fs.statSync(file);
-  const buf = fs.readFileSync(file);
-  const text = buf.toString('utf8');
-  const lines = text.split(/\r?\n/).filter(Boolean);
-  console.log(JSON.stringify({
-    file: path.relative(outDir, file),
-    bytes: stat.size,
-    lineCount: lines.length,
-    firstLine: lines[0] ?? null,
-    secondLine: lines[1] ?? null,
-    lastLine: lines.at(-1) ?? null
-  }, null, 2));
-}
+console.log(JSON.stringify({
+  rootType: Array.isArray(data) ? 'array' : typeof data,
+  rootLength: Array.isArray(data) ? data.length : null,
+  firstKeys: Array.isArray(data) && data[0] ? Object.keys(data[0]) : [],
+  first: Array.isArray(data) ? data[0] : data,
+  second: Array.isArray(data) ? data[1] : null,
+  last: Array.isArray(data) ? data.at(-1) : null
+}, null, 2));
