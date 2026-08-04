@@ -1,9 +1,8 @@
 name: Inspect allbars
 
 on:
-  push:
-    branches:
-      - chatgpt-loop-simulation
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
