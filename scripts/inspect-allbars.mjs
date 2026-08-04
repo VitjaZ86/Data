@@ -20,3 +20,5 @@ console.log(JSON.stringify({
   second: Array.isArray(data) ? data[1] : null,
   last: Array.isArray(data) ? data.at(-1) : null
 }, null, 2));
+
+// trigger PR workflow
